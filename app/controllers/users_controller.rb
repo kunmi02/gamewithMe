@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
+  skip_before_action :authenticate_account!, only: [:index, :show]
   before_action :set_user, except: [:index]
+  before_action :authorize_user, only: [:edit, :update]
   
   def index
     @users = User.includes(:games).all
@@ -32,6 +34,12 @@ class UsersController < ApplicationController
   
   def set_user
     @user = User.includes(:games).find(params[:id])
+  end
+  
+  def authorize_user
+    unless @user == current_user_profile
+      redirect_to root_path, alert: "You can only edit your own profile"
+    end
   end
   
   def user_params

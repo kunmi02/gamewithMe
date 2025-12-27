@@ -3,8 +3,9 @@ puts "Cleaning database..."
 Booking.destroy_all
 UserGame.destroy_all
 Availability.destroy_all
-Game.destroy_all
 User.destroy_all
+Account.destroy_all
+Game.destroy_all
 
 # Create Games
 puts "Creating games..."
@@ -27,8 +28,17 @@ created_games = games.map do |game_data|
   Game.create!(game_data)
 end
 
-# Create Users
-puts "Creating users..."
+# Create Accounts and Users
+puts "Creating accounts and users..."
+accounts_data = [
+  { email: "mike@example.com", password: "password123" },
+  { email: "sarah@example.com", password: "password123" },
+  { email: "tech@example.com", password: "password123" },
+  { email: "rocket@example.com", password: "password123" },
+  { email: "alex@example.com", password: "password123" },
+  { email: "champ@example.com", password: "password123" }
+]
+
 users_data = [
   {
     username: "ProGamer_Mike",
@@ -79,8 +89,12 @@ users_data = [
   }
 ]
 
-created_users = users_data.map do |user_data|
-  User.create!(user_data)
+created_users = accounts_data.each_with_index.map do |account_data, index|
+  account = Account.create!(account_data)
+  # User is auto-created via callback, now update with additional data
+  user = account.user
+  user.update!(users_data[index].except(:email)) # Don't update email again
+  user
 end
 
 # Assign games to users
@@ -137,7 +151,12 @@ Booking.create!(
 )
 
 puts "Seed data created successfully!"
+puts "#{Account.count} accounts created"
 puts "#{User.count} users created"
 puts "#{Game.count} games created"
 puts "#{UserGame.count} user-game associations created"
 puts "#{Booking.count} bookings created"
+puts ""
+puts "Test credentials:"
+puts "Email: mike@example.com | Password: password123"
+puts "Email: sarah@example.com | Password: password123"

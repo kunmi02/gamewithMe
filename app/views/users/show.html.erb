@@ -15,7 +15,9 @@
             <p class="text-gray-400 text-sm">🌍 <%= @user.timezone || 'UTC' %></p>
           </div>
         </div>
-        <%= link_to "Edit Profile", edit_user_path(@user), class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300" %>
+        <% if account_signed_in? && @user == current_user_profile %>
+          <%= link_to "Edit Profile", edit_user_path(@user), class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300" %>
+        <% end %>
       </div>
       
       <% if @user.bio.present? %>
@@ -109,9 +111,23 @@
       </div>
     </div>
 
-    <!-- Book a Session Button -->
     <div class="mt-8 text-center">
-      <%= link_to "📅 Book a Session with #{@user.username}", new_booking_path(gamer_id: @user.id), class: "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-300 inline-block" %>
+      <% if account_signed_in? && @user == current_user_profile %>
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-6">
+          <p class="text-gray-300 mb-2">This is your profile</p>
+          <%= link_to "Edit Profile", edit_user_path(@user), 
+              class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 inline-block mt-2" %>
+        </div>
+      <% elsif account_signed_in? %>
+        <%= link_to "📅 Book a Session with #{@user.username}", new_booking_path(gamer_id: @user.id), 
+            class: "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-300 inline-block" %>
+      <% else %>
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-6">
+          <p class="text-gray-300 mb-2">Sign in to book a session</p>
+          <%= link_to "Sign In", new_account_session_path, 
+              class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300 inline-block mt-2" %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

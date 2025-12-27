@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   # Associations
+  belongs_to :account, optional: true  # Optional for existing users without accounts
   has_many :user_games, dependent: :destroy
   has_many :games, through: :user_games
   has_many :availabilities, dependent: :destroy

@@ -1,10 +1,16 @@
 class BookingsController < ApplicationController
+  skip_before_action :authenticate_account!, only: [:index, :show]
   before_action :set_booking, only: [:show, :update, :confirm, :cancel, :complete]
   
   def index
-    # For now, show all bookings. Later we'll filter by current_user
-    @upcoming_bookings = Booking.upcoming.includes(:user, :gamer, :game)
-    @past_bookings = Booking.past.includes(:user, :gamer, :game).limit(10)
+    # Show only current user's bookings if logged in, otherwise all
+    if account_signed_in?
+      @upcoming_bookings = current_user_profile.all_bookings.upcoming.includes(:user, :gamer, :game)
+      @past_bookings = current_user_profile.all_bookings.past.includes(:user, :gamer, :game).limit(10)
+    else
+      @upcoming_bookings = Booking.upcoming.includes(:user, :gamer, :game)
+      @past_bookings = Booking.past.includes(:user, :gamer, :game).limit(10)
+    end
   end
 
   def new
@@ -15,8 +21,13 @@ class BookingsController < ApplicationController
 
   def create
     @booking = Booking.new(booking_params)
-    # For now, we'll use the first user. Later this will be current_user
-    @booking.user_id = User.first.id unless @booking.user_id
+    @booking.user = current_user_profile
+    
+    # Prevent self-booking
+    if @booking.user_id == @booking.gamer_id
+      redirect_to user_path(@booking.gamer), alert: "You cannot book a session with yourself"
+      return
+    end
     
     if @booking.save
       redirect_to @booking, notice: 'Booking request sent successfully!'

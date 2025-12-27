@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :accounts
   root "home#index"
   
   resources :users, only: [:index, :show, :edit, :update] do
