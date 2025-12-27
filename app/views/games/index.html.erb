@@ -1,0 +1,81 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12">
+  <div class="container mx-auto px-4">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-white mb-4">Browse Games</h1>
+      <p class="text-gray-300">Find gamers who play your favorite games</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <% @games.each do |game| %>
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-6 hover:bg-white/20 transition duration-300">
+          <!-- Game Icon -->
+          <div class="w-full h-40 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg mb-4 flex items-center justify-center">
+            <span class="text-6xl">🎮</span>
+          </div>
+
+          <!-- Game Info -->
+          <h3 class="text-xl font-bold text-white mb-2"><%= game.name %></h3>
+          <p class="text-gray-400 text-sm mb-4"><%= game.platform %></p>
+
+          <!-- Players Count -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <span class="text-purple-400 text-sm font-semibold">
+                <%= pluralize(game.users.count, 'player') %>
+              </span>
+            </div>
+            <div class="flex -space-x-2">
+              <% game.users.limit(3).each do |user| %>
+                <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white/20">
+                  <%= user.username.first.upcase %>
+                </div>
+              <% end %>
+              <% if game.users.count > 3 %>
+                <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white/20">
+                  +<%= game.users.count - 3 %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- View Players Button -->
+          <% if game.users.any? %>
+            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition duration-300" onclick="togglePlayers('<%= game.id %>')">
+              View Players
+            </button>
+
+            <!-- Players List (Hidden by default) -->
+            <div id="players-<%= game.id %>" class="hidden mt-4 space-y-2">
+              <% game.users.each do |user| %>
+                <div class="bg-white/5 rounded-lg p-3 flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3">
+                      <%= user.username.first.upcase %>
+                    </div>
+                    <span class="text-white text-sm font-semibold"><%= user.username %></span>
+                  </div>
+                  <%= link_to "View", user_path(user), class: "text-purple-400 hover:text-purple-300 text-sm font-semibold" %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center text-gray-400 text-sm py-2">
+              No players yet
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePlayers(gameId) {
+    const element = document.getElementById('players-' + gameId);
+    if (element.classList.contains('hidden')) {
+      element.classList.remove('hidden');
+    } else {
+      element.classList.add('hidden');
+    }
+  }
+</script>

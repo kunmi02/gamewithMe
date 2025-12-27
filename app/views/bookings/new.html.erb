@@ -1,0 +1,80 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12">
+  <div class="container mx-auto px-4 max-w-2xl">
+    <%= link_to "← Back", :back, class: "text-white hover:text-purple-300 mb-6 inline-block" %>
+    
+    <div class="bg-white/10 backdrop-blur-lg rounded-lg p-8">
+      <h1 class="text-3xl font-bold text-white mb-6">Book a Gaming Session</h1>
+      
+      <% if @gamer %>
+        <div class="bg-white/5 rounded-lg p-4 mb-6 flex items-center">
+          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+            <%= @gamer.username.first.upcase %>
+          </div>
+          <div class="ml-4">
+            <p class="text-gray-400 text-sm">Playing with</p>
+            <p class="text-white font-semibold"><%= @gamer.username %></p>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form_with(model: @booking, class: "space-y-6") do |form| %>
+        <% if @booking.errors.any? %>
+          <div class="bg-red-500/20 border border-red-500 rounded-lg p-4">
+            <h2 class="text-red-300 font-semibold mb-2"><%= pluralize(@booking.errors.count, "error") %> prohibited this booking:</h2>
+            <ul class="list-disc list-inside text-red-200 text-sm">
+              <% @booking.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if @gamer %>
+          <%= form.hidden_field :gamer_id, value: @gamer.id %>
+        <% else %>
+          <div>
+            <%= form.label :gamer_id, "Select Gamer", class: "block text-white font-semibold mb-2" %>
+            <%= form.collection_select :gamer_id, User.all, :id, :username, 
+                { prompt: "Choose a gamer..." }, 
+                class: "w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :game_id, "Select Game", class: "block text-white font-semibold mb-2" %>
+          <%= form.collection_select :game_id, @games, :id, :name, 
+              { prompt: "Choose a game..." }, 
+              class: "w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" %>
+        </div>
+
+        <div>
+          <%= form.label :start_time, "Start Time", class: "block text-white font-semibold mb-2" %>
+          <%= form.datetime_local_field :start_time, 
+              class: "w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" %>
+          <p class="text-gray-400 text-sm mt-1">Select when you want to start playing</p>
+        </div>
+
+        <div>
+          <%= form.label :end_time, "End Time", class: "block text-white font-semibold mb-2" %>
+          <%= form.datetime_local_field :end_time, 
+              class: "w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500" %>
+          <p class="text-gray-400 text-sm mt-1">Select when you want to finish playing</p>
+        </div>
+
+        <div>
+          <%= form.label :notes, "Notes (Optional)", class: "block text-white font-semibold mb-2" %>
+          <%= form.text_area :notes, rows: 4, 
+              placeholder: "Add any notes about the session (game mode, voice chat preference, etc.)",
+              class: "w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" %>
+        </div>
+
+        <div class="flex gap-4">
+          <%= form.submit "Send Booking Request", 
+              class: "flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 cursor-pointer" %>
+          <%= link_to "Cancel", :back, 
+              class: "bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition duration-300" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

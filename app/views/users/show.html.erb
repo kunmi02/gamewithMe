@@ -1,0 +1,117 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12">
+  <div class="container mx-auto px-4">
+    <%= link_to "← Back", root_path, class: "text-white hover:text-purple-300 mb-6 inline-block" %>
+    
+    <!-- Profile Header -->
+    <div class="bg-white/10 backdrop-blur-lg rounded-lg p-8 mb-6">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center">
+          <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-4xl font-bold">
+            <%= @user.username.first.upcase %>
+          </div>
+          <div class="ml-6">
+            <h1 class="text-4xl font-bold text-white mb-2"><%= @user.username %></h1>
+            <p class="text-gray-300 mb-2"><%= @user.email %></p>
+            <p class="text-gray-400 text-sm">🌍 <%= @user.timezone || 'UTC' %></p>
+          </div>
+        </div>
+        <%= link_to "Edit Profile", edit_user_path(@user), class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-300" %>
+      </div>
+      
+      <% if @user.bio.present? %>
+        <div class="mt-6 pt-6 border-t border-white/20">
+          <p class="text-gray-300"><%= @user.bio %></p>
+        </div>
+      <% end %>
+      
+      <!-- Gaming Handles -->
+      <div class="mt-6 pt-6 border-t border-white/20">
+        <h3 class="text-xl font-bold text-white mb-4">Gaming Handles</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <% if @user.psn_handle.present? %>
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-gray-400 text-xs mb-1">PlayStation</p>
+              <p class="text-white font-semibold"><%= @user.psn_handle %></p>
+            </div>
+          <% end %>
+          <% if @user.xbox_handle.present? %>
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-gray-400 text-xs mb-1">Xbox</p>
+              <p class="text-white font-semibold"><%= @user.xbox_handle %></p>
+            </div>
+          <% end %>
+          <% if @user.steam_handle.present? %>
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-gray-400 text-xs mb-1">Steam</p>
+              <p class="text-white font-semibold"><%= @user.steam_handle %></p>
+            </div>
+          <% end %>
+          <% if @user.epic_handle.present? %>
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-gray-400 text-xs mb-1">Epic Games</p>
+              <p class="text-white font-semibold"><%= @user.epic_handle %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Games -->
+      <div class="bg-white/10 backdrop-blur-lg rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-white mb-4">Games</h2>
+        <% if @user_games.any? %>
+          <div class="space-y-3">
+            <% @user_games.each do |user_game| %>
+              <div class="bg-white/5 rounded-lg p-4 flex justify-between items-center">
+                <div>
+                  <h3 class="text-white font-semibold"><%= user_game.game.name %></h3>
+                  <p class="text-gray-400 text-sm"><%= user_game.game.platform %></p>
+                </div>
+                <% if user_game.skill_level.present? %>
+                  <span class="bg-purple-600/50 text-white text-xs px-3 py-1 rounded-full">
+                    <%= user_game.skill_level.titleize %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-gray-400">No games added yet</p>
+        <% end %>
+      </div>
+
+      <!-- Upcoming Sessions -->
+      <div class="bg-white/10 backdrop-blur-lg rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-white mb-4">Upcoming Sessions</h2>
+        <% if @upcoming_bookings.any? %>
+          <div class="space-y-3">
+            <% @upcoming_bookings.each do |booking| %>
+              <div class="bg-white/5 rounded-lg p-4">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-white font-semibold"><%= booking.game.name %></h3>
+                  <span class="bg-<%= booking.status == 'confirmed' ? 'green' : 'yellow' %>-600/50 text-white text-xs px-2 py-1 rounded">
+                    <%= booking.status.titleize %>
+                  </span>
+                </div>
+                <p class="text-gray-400 text-sm mb-1">
+                  📅 <%= booking.start_time.strftime("%b %d, %Y at %I:%M %p") %>
+                </p>
+                <p class="text-gray-400 text-sm">
+                  👤 vs <%= booking.user_id == @user.id ? booking.gamer.username : booking.user.username %>
+                </p>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-gray-400">No upcoming sessions</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Book a Session Button -->
+    <div class="mt-8 text-center">
+      <%= link_to "📅 Book a Session with #{@user.username}", new_booking_path(gamer_id: @user.id), class: "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-300 inline-block" %>
+    </div>
+  </div>
+</div>

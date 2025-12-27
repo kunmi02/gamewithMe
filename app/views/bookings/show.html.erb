@@ -1,0 +1,119 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12">
+  <div class="container mx-auto px-4 max-w-4xl">
+    <%= link_to "← Back to Bookings", bookings_path, class: "text-white hover:text-purple-300 mb-6 inline-block" %>
+    
+    <div class="bg-white/10 backdrop-blur-lg rounded-lg p-8">
+      <!-- Status Badge -->
+      <div class="flex justify-between items-start mb-6">
+        <h1 class="text-3xl font-bold text-white">Booking Details</h1>
+        <span class="px-4 py-2 rounded-full text-sm font-semibold <%= 
+          case @booking.status
+          when 'confirmed' then 'bg-green-600/50 text-green-100'
+          when 'pending' then 'bg-yellow-600/50 text-yellow-100'
+          when 'cancelled' then 'bg-red-600/50 text-red-100'
+          when 'completed' then 'bg-blue-600/50 text-blue-100'
+          end
+        %>">
+          <%= @booking.status.titleize %>
+        </span>
+      </div>
+
+      <!-- Game Info -->
+      <div class="bg-white/5 rounded-lg p-6 mb-6">
+        <div class="flex items-center">
+          <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-4xl">
+            🎮
+          </div>
+          <div class="ml-6">
+            <h2 class="text-2xl font-bold text-white mb-1"><%= @booking.game.name %></h2>
+            <p class="text-gray-400"><%= @booking.game.platform %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Players -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Booker -->
+        <div class="bg-white/5 rounded-lg p-6">
+          <p class="text-gray-400 text-sm mb-3">Requested by</p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+              <%= @booking.user.username.first.upcase %>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-white font-semibold"><%= @booking.user.username %></h3>
+              <p class="text-gray-400 text-sm"><%= @booking.user.email %></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gamer -->
+        <div class="bg-white/5 rounded-lg p-6">
+          <p class="text-gray-400 text-sm mb-3">Playing with</p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+              <%= @booking.gamer.username.first.upcase %>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-white font-semibold"><%= @booking.gamer.username %></h3>
+              <p class="text-gray-400 text-sm"><%= @booking.gamer.email %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session Details -->
+      <div class="bg-white/5 rounded-lg p-6 mb-6">
+        <h3 class="text-xl font-bold text-white mb-4">Session Details</h3>
+        <div class="space-y-3">
+          <div class="flex items-center text-gray-300">
+            <span class="text-2xl mr-3">📅</span>
+            <div>
+              <p class="text-sm text-gray-400">Date</p>
+              <p class="font-semibold"><%= @booking.start_time.strftime("%A, %B %d, %Y") %></p>
+            </div>
+          </div>
+          <div class="flex items-center text-gray-300">
+            <span class="text-2xl mr-3">🕐</span>
+            <div>
+              <p class="text-sm text-gray-400">Time</p>
+              <p class="font-semibold">
+                <%= @booking.start_time.strftime("%I:%M %p") %> - <%= @booking.end_time.strftime("%I:%M %p") %>
+                <span class="text-gray-400 text-sm">
+                  (<%= (((@booking.end_time - @booking.start_time) / 3600).round(1)) %> hours)
+                </span>
+              </p>
+            </div>
+          </div>
+          <% if @booking.notes.present? %>
+            <div class="flex items-start text-gray-300">
+              <span class="text-2xl mr-3">📝</span>
+              <div>
+                <p class="text-sm text-gray-400">Notes</p>
+                <p class="font-semibold"><%= @booking.notes %></p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-3">
+        <% if @booking.status == 'pending' %>
+          <%= button_to "✓ Confirm Booking", confirm_booking_path(@booking), method: :patch, 
+              class: "bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300" %>
+          <%= button_to "✗ Cancel Booking", cancel_booking_path(@booking), method: :patch, 
+              class: "bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300" %>
+        <% elsif @booking.status == 'confirmed' %>
+          <%= button_to "✓ Mark as Completed", complete_booking_path(@booking), method: :patch, 
+              class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300" %>
+          <%= button_to "✗ Cancel Booking", cancel_booking_path(@booking), method: :patch, 
+              class: "bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300" %>
+        <% end %>
+        
+        <%= link_to "← Back to Bookings", bookings_path, 
+            class: "bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition duration-300" %>
+      </div>
+    </div>
+  </div>
+</div>

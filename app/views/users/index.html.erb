@@ -1,0 +1,83 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12">
+  <div class="container mx-auto px-4">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-white mb-4">Browse Gamers</h1>
+      <p class="text-gray-300">Find your next gaming partner</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @users.each do |user| %>
+        <div class="bg-white/10 backdrop-blur-lg rounded-lg p-6 hover:bg-white/20 transition duration-300">
+          <!-- User Avatar -->
+          <div class="flex items-center mb-4">
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+              <%= user.username.first.upcase %>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-xl font-bold text-white"><%= user.username %></h3>
+              <p class="text-gray-400 text-sm">🌍 <%= user.timezone || 'UTC' %></p>
+            </div>
+          </div>
+
+          <!-- Bio -->
+          <p class="text-gray-300 mb-4 line-clamp-2">
+            <%= user.bio || 'No bio yet' %>
+          </p>
+
+          <!-- Games -->
+          <div class="mb-4">
+            <p class="text-gray-400 text-xs mb-2">Plays</p>
+            <div class="flex flex-wrap gap-2">
+              <% user.games.limit(3).each do |game| %>
+                <span class="bg-purple-600/50 text-white text-xs px-3 py-1 rounded-full">
+                  <%= game.name %>
+                </span>
+              <% end %>
+              <% if user.games.count > 3 %>
+                <span class="bg-gray-600/50 text-white text-xs px-3 py-1 rounded-full">
+                  +<%= user.games.count - 3 %> more
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Gaming Handles -->
+          <% if user.psn_handle.present? || user.xbox_handle.present? || user.steam_handle.present? || user.epic_handle.present? %>
+            <div class="mb-4 pb-4 border-b border-white/20">
+              <p class="text-gray-400 text-xs mb-2">Platforms</p>
+              <div class="flex gap-2">
+                <% if user.psn_handle.present? %>
+                  <span class="text-white text-xs bg-blue-600/50 px-2 py-1 rounded">PSN</span>
+                <% end %>
+                <% if user.xbox_handle.present? %>
+                  <span class="text-white text-xs bg-green-600/50 px-2 py-1 rounded">Xbox</span>
+                <% end %>
+                <% if user.steam_handle.present? %>
+                  <span class="text-white text-xs bg-gray-600/50 px-2 py-1 rounded">Steam</span>
+                <% end %>
+                <% if user.epic_handle.present? %>
+                  <span class="text-white text-xs bg-purple-600/50 px-2 py-1 rounded">Epic</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Actions -->
+          <div class="flex gap-2">
+            <%= link_to "View Profile", user_path(user), 
+                class: "flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg transition duration-300" %>
+            <%= link_to "Book Session", new_booking_path(gamer_id: user.id), 
+                class: "flex-1 text-center bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 rounded-lg transition duration-300" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @users.empty? %>
+      <div class="bg-white/10 backdrop-blur-lg rounded-lg p-12 text-center">
+        <p class="text-gray-400 text-lg mb-4">No gamers found</p>
+        <%= link_to "Go Home", root_path, class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 inline-block" %>
+      </div>
+    <% end %>
+  </div>
+</div>

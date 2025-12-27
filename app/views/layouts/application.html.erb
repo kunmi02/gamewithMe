@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Gamewithme" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Gamewithme">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-black/30 backdrop-blur-lg border-b border-white/10 fixed w-full top-0 z-50">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <%= link_to root_path, class: "flex items-center space-x-2" do %>
+            <span class="text-3xl">🎮</span>
+            <span class="text-white font-bold text-xl">GameWithMe</span>
+          <% end %>
+          
+          <!-- Navigation Links -->
+          <div class="flex items-center space-x-6">
+            <%= link_to "Home", root_path, class: "text-gray-300 hover:text-white transition duration-300" %>
+            <%= link_to "Games", games_path, class: "text-gray-300 hover:text-white transition duration-300" %>
+            <%= link_to "Bookings", bookings_path, class: "text-gray-300 hover:text-white transition duration-300" %>
+            <%= link_to "My Profile", user_path(1), class: "bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300" %>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if notice %>
+      <div class="fixed top-20 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <%= notice %>
+      </div>
+    <% end %>
+    <% if alert %>
+      <div class="fixed top-20 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+      <%= yield %>
+    </main>
+  </body>
+</html>
